@@ -1,0 +1,92 @@
+@media screen and (max-width: 1280px) {
+  .banner-heading {
+    font-size: 50px !important;
+  }
+  .banner-subheading {
+    font-size: 35px !important;
+  }
+  .banner-description {
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 1024px) {
+  .input-responsive {
+    width: 340px !important;
+  }
+  .banner-heading {
+    font-size: 45px !important;
+  }
+  .banner-subheading {
+    font-size: 30px !important;
+  }
+  .banner-description {
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 800px) {
+  .input-responsive {
+    display: none !important;
+  }
+  .strip-responsive {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    gap: 5px !important;
+  }
+  .main-container-strip {
+    padding: 12px !important;
+    display: none !important;
+  }
+  .search-and-logo-responsive {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  .text-banner-responsive {
+    width: 100% !important;
+  }
+  .background-responsive {
+    bottom: -54% !important;
+  }
+  .banner-dog-div-responsive {
+    height: 47vh !important;
+    /* right: -5% !important; */
+  }
+  .banner-dog-responsive {
+    height: 47vh !important;
+    /* right: -5% !important; */
+  }
+  .background-responsive {
+    height: 50vh !important;
+  }
+}
+@media screen and (max-width: 500px) {
+  .logo-responsive {
+    width: 80px !important;
+    height: 40px !important;
+    margin-left: 5px !important;
+  }
+  .strip-text {
+    font-size: 14px !important;
+  }
+
+  .main-header {
+    padding: 12px !important;
+  }
+  .banner-heading {
+    font-size: 46px !important;
+  }
+  .banner-subheading {
+    font-size: 23px !important;
+  }
+  .banner-description {
+    font-size: 12px !important;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+  }
+  .banner-dog-responsive {
+    height: 45vh !important;
+  }
+  .banner-dog-div-responsive {
+    height: 50vh !important;
+    right: -5% !important;
+  }
+}

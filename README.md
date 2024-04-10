@@ -1,13 +1,5 @@
-# Eccomerce (Metropolitan / Pet E-Commerce) — Complete Documentation
-
+# Eccomerce (Metropolitan / Pet E-Commerce) 
 **Repository:** [https://github.com/mshayan-ags/Eccomerce](https://github.com/mshayan-ags/Eccomerce)  
-**Default branch:** `master`  
-**Author / Owner:** mshayan-ags  
-**Status:** No description, topics, website, stars, or forks on the public GitHub page.  
-**Commits (at time of documentation):** ~15  
-
-This document describes **every major part** of the repository: structure, tech stack, features, data models, API surface, frontend & admin apps, real-time features, payments, security, environment configuration, and how the pieces fit together.
-
 ---
 
 ## 1. Project Overview

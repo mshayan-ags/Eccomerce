@@ -12,9 +12,10 @@ import {
 } from "react-icons/io";
 import avatar from "assets/img/avatars/avatar4.png";
 import { withAuthContext } from "context/Auth";
+import { withNotificationsContext } from "context/Notifications";
 
-const Navbar = (props, { setToken }) => {
-  const { onOpenSidenav, brandText } = props;
+const Navbar = (props) => {
+  const { onOpenSidenav, brandText, notifications, unreadCount, markAllRead, setToken } = props;
   const navigate = useNavigate()
   const [darkmode, setDarkmode] = React.useState(false);
 
@@ -69,8 +70,13 @@ const Navbar = (props, { setToken }) => {
         {/* start Notification */}
         <Dropdown
           button={
-            <p className="cursor-pointer">
+            <p className="relative cursor-pointer" onClick={markAllRead}>
               <IoMdNotificationsOutline className="h-4 w-4 text-gray-600 dark:text-white" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </p>
           }
           animation="origin-[65%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
@@ -78,12 +84,32 @@ const Navbar = (props, { setToken }) => {
             <div className="flex w-[360px] flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
               <div className="flex items-center justify-between">
                 <p className="text-base font-bold text-navy-700 dark:text-white">
-                  Notification
+                  New Orders
                 </p>
-                <p className="text-sm font-bold text-navy-700 dark:text-white">
+                <p className="cursor-pointer text-sm font-bold text-navy-700 dark:text-white" onClick={markAllRead}>
                   Mark all read
                 </p>
               </div>
+              {notifications?.length > 0 ? (
+                <div className="flex max-h-[320px] flex-col gap-1 overflow-y-auto">
+                  {notifications.map((order) => (
+                    <div
+                      key={`${order.id}-${order.receivedAt}`}
+                      className="cursor-pointer rounded-lg p-2 hover:bg-lightPrimary dark:hover:bg-navy-900"
+                      onClick={() => navigate(`/admin/EditSale/${order.id}`)}
+                    >
+                      <p className="text-sm font-semibold text-navy-700 dark:text-white">
+                        New order from {order.customer || "a customer"}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">
+                        ${Number(order.total || 0).toFixed(2)} · {new Date(order.receivedAt).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-300">No new orders yet</p>
+              )}
             </div>
           }
           classNames={"py-2 top-4 -left-[230px] md:-left-[440px] w-max"}
@@ -160,4 +186,4 @@ const Navbar = (props, { setToken }) => {
   );
 };
 
-export default withAuthContext(Navbar);
+export default withAuthContext(withNotificationsContext(Navbar));

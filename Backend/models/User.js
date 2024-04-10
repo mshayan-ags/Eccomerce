@@ -34,6 +34,13 @@ const UserSchema = new mongoose.Schema(
 			type: Boolean,
 			default: true
 		},
+		// A lightweight account created transparently for guest checkout,
+		// rather than something the shopper deliberately signed up for -
+		// never has a password the shopper actually knows.
+		isGuest: {
+			type: Boolean,
+			default: false
+		},
 		otp: {
 			type: String,
 			select: false

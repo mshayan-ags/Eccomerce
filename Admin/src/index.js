@@ -14,6 +14,7 @@ import ProductProvider from "context/Product";
 import DiscountProvider from "context/Discount";
 import CouponProvider from "context/Coupon";
 import BlogProvider from "context/Blog";
+import NotificationsProvider from "context/Notifications";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -30,7 +31,9 @@ root.render(
                     <UserProvider>
                       <ProductProvider>
                         <BlogProvider>
-                          <App />
+                          <NotificationsProvider>
+                            <App />
+                          </NotificationsProvider>
                         </BlogProvider>
                       </ProductProvider>
                     </UserProvider>

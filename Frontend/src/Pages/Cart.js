@@ -12,12 +12,67 @@ import DiscountCoupon from "../Components/Coupons"
 import UsedDiscountCoupon from "../Components/Coupons/used"
 import Swal from "sweetalert2"
 import moment from "moment"
+import axios from "axios"
+import { BackendLink } from "../link"
 
-function CartPage({ Cart, getTotal, Token, CheckToken, getSubTotal, getDiscount, ReedeemCoupon, AllCoupon, Coupon, GetAllCouponsUser, getCouponDiscount, getTotalAfterCoupon,
+function CartPage({ Cart, getTotal, Token, setToken, CheckToken, getSubTotal, getDiscount, ReedeemCoupon, AllCoupon, Coupon, GetAllCouponsUser, getCouponDiscount, getTotalAfterCoupon,
     ScheduleOrder,
     setScheduleOrder }) {
     const [CouponCode, setCouponCode] = useState("")
     const navigate = useNavigate()
+
+    // Lets someone check out without creating a real account first - a
+    // lightweight guest User is created transparently behind the scenes so
+    // the rest of the checkout flow (which all assumes an authenticated
+    // User) works unmodified. Returns whether checkout should proceed.
+    async function ensureAuthenticated() {
+        if (Token) return true;
+
+        const { value: formValues } = await Swal.fire({
+            title: "Continue as Guest",
+            html:
+                '<input id="swal-guest-name" class="swal2-input" placeholder="Full Name">' +
+                '<input id="swal-guest-email" type="email" class="swal2-input" placeholder="Email Address">',
+            confirmButtonText: "Continue as Guest",
+            showCancelButton: true,
+            cancelButtonText: "Log In Instead",
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = document.getElementById("swal-guest-name")?.value?.trim();
+                const email = document.getElementById("swal-guest-email")?.value?.trim();
+                if (!name || !email) {
+                    Swal.showValidationMessage("Please enter your name and email");
+                    return false;
+                }
+                return { name, email };
+            }
+        });
+
+        if (!formValues) {
+            navigate("/SignIn");
+            return false;
+        }
+
+        try {
+            const res = await axios.post(`${BackendLink}/Guest-Checkout`, formValues);
+            if (res?.data?.status == 200) {
+                localStorage.setItem("token", res.data.token);
+                setToken(res.data.token);
+                return true;
+            }
+        } catch (err) {
+            swal({
+                text: err?.response?.data?.message || "There was some Error",
+                button: {
+                    text: "Ok",
+                    closeModal: true
+                },
+                icon: "error",
+                time: 3000
+            });
+        }
+        return false;
+    }
     useEffect(() => {
         window.scrollTo({
             top: 0,
@@ -80,12 +135,10 @@ function CartPage({ Cart, getTotal, Token, CheckToken, getSubTotal, getDiscount,
                                     {getTotalAfterCoupon().toFixed(2) || 0}
                                 </p>
                             </div>
-                            <div className="bg-[#1e8a30ff] py-[16px] rounded-[30px] text-center text-white text-[16px] cursor-pointer font-[600] mt-4" onClick={() => {
+                            <div className="bg-[#1e8a30ff] py-[16px] rounded-[30px] text-center text-white text-[16px] cursor-pointer font-[600] mt-4" onClick={async () => {
                                 if (getTotalAfterCoupon() > 0) {
-                                    if (Token) {
+                                    if (await ensureAuthenticated()) {
                                         navigate("/Checkout")
-                                    } else {
-                                        navigate("/SignIn")
                                     }
                                 } else {
                                     swal({
@@ -105,7 +158,7 @@ function CartPage({ Cart, getTotal, Token, CheckToken, getSubTotal, getDiscount,
                             <div className="flex justify-between cursor-pointer flex-row align-center items-center px-[5%] border-[2px] border-[#1e8a30ff] py-[16px] rounded-[30px] text-center text-[#1e8a30ff]  text-[16px] font-[600] mt-4"
                                 onClick={async () => {
                                     if (getTotalAfterCoupon() > 0) {
-                                        if (Token) {
+                                        if (await ensureAuthenticated()) {
                                             const { value: date } = await Swal.fire({
                                                 title: "Enter your Preferred Date Time For Order Delivery",
                                                 input: "datetime-local",
@@ -123,8 +176,6 @@ function CartPage({ Cart, getTotal, Token, CheckToken, getSubTotal, getDiscount,
                                                 Swal.fire(`Your Order is Being Scheduled for ${moment(date)?.format("YYYY-MM-DDTHH:MM")}`);
                                             }
                                             navigate("/Checkout")
-                                        } else {
-                                            navigate("/SignIn")
                                         }
                                     } else {
                                         swal({

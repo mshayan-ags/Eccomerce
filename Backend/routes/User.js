@@ -75,6 +75,65 @@ router.post("/SignUp", async (req, res) => {
 	}
 });
 
+// Lets a shopper check out without creating a real account. A minimal User
+// still has to exist (Sale, Address, etc. all reference one), but it's
+// created transparently here with an unusable random password instead of
+// asking the shopper to pick one - this endpoint's token is only ever good
+// for finishing this one order, not for a real login.
+router.post("/Guest-Checkout", async (req, res) => {
+	try {
+		const Credentials = req.body;
+
+		const Check = await CheckAllRequiredFieldsAvailaible(Credentials, ["name", "email"], res);
+		if (Check) {
+			return;
+		}
+
+		if (!Verifier.validate(Credentials?.email)) {
+			return res.status(400).json({ status: 400, message: "Please Change your email as it's not valid" });
+		}
+
+		const existingUser = await User.findOne({ email: Credentials?.email });
+		if (existingUser?._id && !existingUser?.isGuest) {
+			return res.status(409).json({
+				status: 409,
+				message: "An account already exists with this email. Please login instead."
+			});
+		}
+
+		let guestUser = existingUser;
+		if (!guestUser?._id) {
+			const password = await bcrypt.hash(crypto.randomBytes(32).toString("hex"), 12);
+			guestUser = new User({
+				name: Credentials?.name,
+				email: Credentials?.email,
+				password,
+				isGuest: true,
+				subscriber: false
+			});
+			await guestUser.save();
+		}
+
+		const token = jwt.sign({ id: guestUser?._id }, APP_SECRET, { expiresIn: "7d" });
+
+		res.status(200).json({
+			token,
+			id: guestUser?._id,
+			status: 200,
+			message: "Guest Checkout Ready"
+		});
+	} catch (error) {
+		if (error?.code == 11000) {
+			res.status(409).json({
+				status: 409,
+				message: `Please Change your ${Object.keys(error?.keyValue)[0]} as it's not unique`
+			});
+		} else {
+			res.status(500).json({ status: 500, message: error?.message || "Something went wrong" });
+		}
+	}
+});
+
 router.post("/Verify-OTP", async (req, res) => {
 	try {
 		const Check = await CheckAllRequiredFieldsAvailaible(req.body, ["email", "otp"], res);

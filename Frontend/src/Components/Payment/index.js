@@ -80,7 +80,7 @@ function Payment({ secret, createPayment }) {
   )
 }
 
-function PaymentComponent({ Token, CheckToken, getTotalAfterCoupon, Address, PlaceOrder, Order }) {
+function PaymentComponent({ Token, CheckToken, getTotalAfterCoupon, Address, buildOrderPayload, FinalizeOrder, Order }) {
   const [client, setclient] = useState("")
 
   const navigate = useNavigate()
@@ -93,8 +93,11 @@ function PaymentComponent({ Token, CheckToken, getTotalAfterCoupon, Address, Pla
 
   const fetchClientSecret = async () => {
     try {
+      // Bank and paymentMethod aren't known yet at this point (the user
+      // hasn't entered card details) - the backend fills those in once
+      // confirm-payment-intent resolves them.
       const response = await axios.post(`${BackendLink}/create-payment-intent`, {
-        amount: getTotalAfterCoupon() * 100, currency: 'usd'
+        amount: getTotalAfterCoupon() * 100, currency: 'usd', order: buildOrderPayload()
       }, {
         headers: {
           Authorization: Token
@@ -109,7 +112,6 @@ function PaymentComponent({ Token, CheckToken, getTotalAfterCoupon, Address, Pla
   };
   const createPayment = async ({ paymentMethod, setLoading }) => {
     try {
-      GetSecret()
       return await axios.post(`${BackendLink}/confirm-payment-intent`, {
         intent: client?.id,
         paymentMethod: paymentMethod
@@ -120,22 +122,21 @@ function PaymentComponent({ Token, CheckToken, getTotalAfterCoupon, Address, Pla
             : `${localStorage.getItem("token")}`,
         },
       }).then(async (res) => {
-        if (res) {
+        if (res?.data?.saleId) {
+          FinalizeOrder(navigate, res?.data?.saleId)
+          setLoading(false)
+        } else {
           swal({
-            text: res?.data?.message || "Payment SuccesFull Wait For Order Proccesing",
+            text: res?.data?.warning || "Payment Successful, Wait For Order Processing",
             button: {
               text: "Ok",
               closeModal: true
             },
-            icon: res ? "success" : "error",
+            icon: res?.data?.warning ? "warning" : "success",
             time: 3000
           });
-          if (res?.status == 200) {
-            await PlaceOrder(navigate, res?.data?.bankId, paymentMethod?.id)
-            setLoading(false)
-          } else {
-            setLoading(false)
-          }
+          setLoading(false)
+          GetSecret();
         }
       }).catch((err) => {
         console.log(err)

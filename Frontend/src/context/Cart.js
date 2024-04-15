@@ -148,66 +148,50 @@ const CartProvider = ({ children, Token, CheckToken }) => {
   }, [Cart]);
 
 
-  const PlaceOrder = async (navigate, bank, paymentMethod) => {
-    try {
-      if (Token) {
-        const Obj = {
-          "Product": Cart,
-          "Bank": bank,
-          "Address": Address,
-          "paymentMethod": paymentMethod,
-          Notes: Notes,
-          Total: getTotal(),
-        }
-
-        if (new Date(ScheduleOrder) > new Date()) {
-          Obj.scheduleDate = ScheduleOrder;
-          Obj.status = "Scheduled"
-        }
-        await axios.post(`${BackendLink}/Create-Sale`, Obj, {
-          headers: {
-            Authorization: Token
-              ? `${Token}`
-              : `${localStorage.getItem("token")}`,
-          },
-        }).then((res) => {
-          if (res?.data?.status == 200) {
-            setOrder(res?.data?.id);
-            localStorage.removeItem("Cart");
-            localStorage.removeItem("Coupon");
-            setCart([])
-            setAddress("")
-            setCoupon("")
-            setScheduleOrder(null)
-            swal({
-              text: "Order Placed Thanks For Ordering",
-              button: {
-                text: "Ok",
-                closeModal: true
-              },
-              icon: res?.data?.status == 200 ? "success" : "error",
-              time: 3000
-            });
-            navigate(`/OrderTracking/${res?.data?.id}`);
-          }
-        }).catch((err) => {
-          swal({
-            text: err?.response?.data?.message
-              ? err?.response?.data?.message
-              : "There was some Error",
-            button: {
-              text: "Ok",
-              closeModal: true
-            },
-            icon: "error",
-            time: 3000
-          });
-        });
-      }
-    } catch (error) {
-      console.log('Error creating payment intent:', error);
+  // Builds the order payload up front, before Stripe is even involved, so it
+  // can be attached to the payment intent (see Payment/index.js) - the
+  // backend stores it and finishes creating the order itself as soon as the
+  // payment is confirmed, either from the confirm call or, as a backstop,
+  // from the Stripe webhook if the browser never gets to call back.
+  function buildOrderPayload(bank, paymentMethod) {
+    const Obj = {
+      "Product": Cart,
+      "Bank": bank,
+      "Address": Address,
+      "paymentMethod": paymentMethod,
+      Notes: Notes,
+      Total: getTotal(),
     }
-  };
+
+    if (new Date(ScheduleOrder) > new Date()) {
+      Obj.scheduleDate = ScheduleOrder;
+      Obj.status = "Scheduled"
+    }
+    return Obj;
+  }
+
+  // The order itself is already created server-side by the time this runs
+  // (confirm-payment-intent finalizes it synchronously) - this just applies
+  // the local side effects of a successful checkout.
+  function FinalizeOrder(navigate, saleId) {
+    setOrder(saleId);
+    localStorage.removeItem("Cart");
+    localStorage.removeItem("Coupon");
+    setCart([])
+    setAddress("")
+    setCoupon("")
+    setScheduleOrder(null)
+    swal({
+      text: "Order Placed Thanks For Ordering",
+      button: {
+        text: "Ok",
+        closeModal: true
+      },
+      icon: "success",
+      time: 3000
+    });
+    navigate(`/OrderTracking/${saleId}`);
+  }
 
 
   const ReedeemCoupon = async (code) => {
@@ -340,7 +324,8 @@ const CartProvider = ({ children, Token, CheckToken }) => {
         isItemCart,
         getItemCart,
         getTotal,
-        PlaceOrder,
+        buildOrderPayload,
+        FinalizeOrder,
         Address,
         setAddress,
         Notes,

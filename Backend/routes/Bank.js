@@ -134,9 +134,16 @@ router.post("/confirm-payment-intent", async (req, res) => {
 			if (pendingSale && pendingSale.status === "pending") {
 				try {
 					const { createSaleFromOrder } = require("./Sale");
+					// The order payload was captured before the card was even chosen,
+					// so the resolved bank/payment-method (just worked out above) is
+					// merged in now, at the last moment before the order is created.
 					const result = await createSaleFromOrder({
 						userId: id,
-						Credentials: pendingSale.orderPayload,
+						Credentials: {
+							...pendingSale.orderPayload,
+							Bank: bank?._id ?? pendingSale.orderPayload?.Bank,
+							paymentMethod: paymentMethodId ?? pendingSale.orderPayload?.paymentMethod,
+						},
 						stripePaymentIntentId: paymentIntent.id,
 					});
 					saleId = result.saleId;

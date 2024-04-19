@@ -30,6 +30,14 @@ const AdminSchema = new mongoose.Schema(
 			type: String,
 			required: true
 		},
+		twoFactorSecret: {
+			type: String,
+			select: false
+		},
+		twoFactorEnabled: {
+			type: Boolean,
+			default: false
+		},
 		Responsiblities: {
 			type: Map,
 			of: Boolean

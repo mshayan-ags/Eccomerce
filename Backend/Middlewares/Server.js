@@ -38,7 +38,10 @@ const authLimiter = rateLimit({
 	legacyHeaders: false,
 	message: { status: 429, message: "Too many attempts, please try again later" },
 });
-app.use(["/Login", "/Login-Admin", "/Forget-Password", "/Resend-OTP", "/Verify-OTP", "/Reset-Password", "/Guest-Checkout"], authLimiter);
+app.use(
+	["/Login", "/Login-Admin", "/Login-Admin-2FA", "/Forget-Password", "/Resend-OTP", "/Verify-OTP", "/Reset-Password", "/Guest-Checkout"],
+	authLimiter
+);
 
 const port = process.env.PORT || 5000;
 

@@ -1,8 +1,5 @@
 import React, { lazy } from "react";
 
-// Admin Imports
-const MainDashboard = lazy(() => import("views/admin/default"));
-
 // Icon Imports
 import {
   MdHome,
@@ -15,6 +12,7 @@ import {
 // Each view is its own chunk, only fetched when an admin actually navigates
 // there - the sidebar/router shell (loaded up front) stays a small, fast
 // initial bundle instead of everything shipping together.
+const MainDashboard = lazy(() => import("views/admin/default"));
 const Address = lazy(() => import("views/admin/Address/List"));
 const Bank = lazy(() => import("views/admin/Bank/List"));
 const User = lazy(() => import("views/admin/User/List"));

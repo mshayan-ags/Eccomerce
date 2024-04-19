@@ -1,26 +1,43 @@
-import React, { useEffect } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Pages/Home";
-import Cart from "./Pages/Cart";
-import Category from "./Pages/Category";
-import Checkout from "./Pages/Checkout";
-import ProductDetails from "./Pages/ProductDetails";
-import ProductDetailWithComments from "./Pages/ProductDetailWithComments";
-import Wishlist from "./Pages/Wishlist";
-import OrderTracking from "./Pages/OrderTracking";
-import SignIn from "./Pages/Singin";
-import SignUp from "./Pages/Signup";
-import Payment from "./Pages/Payment";
-import AccountSetting from "./Pages/AccountSetting";
-import OrderHistory from "./Pages/OrderHistory";
-import Privacy from "./Pages/Privacy";
-import TermsOfUse from "./Pages/TAC";
-import Profile from "./Pages/Profile";
 import Aos from "aos";
-import ChangePasswordMain from "./Pages/ChangePassword";
-import BlogList from "./Pages/BlogList";
-import BlogDetail from "./Pages/BlogDetail";
+
+// Home stays eager since it's what most visits land on first - every other
+// page is its own chunk, only fetched once someone actually navigates there.
+const Cart = lazy(() => import("./Pages/Cart"));
+const Category = lazy(() => import("./Pages/Category"));
+const Checkout = lazy(() => import("./Pages/Checkout"));
+const ProductDetails = lazy(() => import("./Pages/ProductDetails"));
+const ProductDetailWithComments = lazy(() => import("./Pages/ProductDetailWithComments"));
+const Wishlist = lazy(() => import("./Pages/Wishlist"));
+const OrderTracking = lazy(() => import("./Pages/OrderTracking"));
+const SignIn = lazy(() => import("./Pages/Singin"));
+const SignUp = lazy(() => import("./Pages/Signup"));
+const Payment = lazy(() => import("./Pages/Payment"));
+const AccountSetting = lazy(() => import("./Pages/AccountSetting"));
+const OrderHistory = lazy(() => import("./Pages/OrderHistory"));
+const Privacy = lazy(() => import("./Pages/Privacy"));
+const TermsOfUse = lazy(() => import("./Pages/TAC"));
+const Profile = lazy(() => import("./Pages/Profile"));
+const ChangePasswordMain = lazy(() => import("./Pages/ChangePassword"));
+const BlogList = lazy(() => import("./Pages/BlogList"));
+const BlogDetail = lazy(() => import("./Pages/BlogDetail"));
+
+// A route's chunk is still loading over the network - shown on every lazy
+// route transition, not just first load, so it stays minimal.
+function PageLoader() {
+  return (
+    <div className="w-full h-[60vh] flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-[#1e8a30ff] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
+function withSuspense(element) {
+  return <Suspense fallback={<PageLoader />}>{element}</Suspense>;
+}
 
 const App = () => {
   useEffect(() => {
@@ -41,79 +58,79 @@ const App = () => {
     },
     {///
       path: "/AccountSetting",
-      element: <AccountSetting />,
+      element: withSuspense(<AccountSetting />),
     },
     {///
       path: "/ChangePassword",
-      element: <ChangePasswordMain />,
+      element: withSuspense(<ChangePasswordMain />),
     },
     {///
       path: "/privacy-policy",
-      element: <Privacy />,
+      element: withSuspense(<Privacy />),
     },
     {///
       path: "/TermsOfUse",
-      element: <TermsOfUse />,
+      element: withSuspense(<TermsOfUse />),
     },
     {///
       path: "/Profile",
-      element: <Profile />,
+      element: withSuspense(<Profile />),
     },
     {///
       path: "/OrderHistory",
-      element: <OrderHistory />,
+      element: withSuspense(<OrderHistory />),
     },
     {///
       path: "/Cart",
-      element: <Cart />,
+      element: withSuspense(<Cart />),
     },
     {///
       path: "/Payment",
-      element: <Payment />,
+      element: withSuspense(<Payment />),
     },
     {
       path: "/OrderTracking/:id",
-      element: <OrderTracking />,
+      element: withSuspense(<OrderTracking />),
     },
     {///
       path: "/SignIn",
-      element: <SignIn />,
+      element: withSuspense(<SignIn />),
     },
     {///
       path: "/SignUp",
-      element: <SignUp />,
+      element: withSuspense(<SignUp />),
     },
     {///
       path: "/Category",
-      element: <Category />,
+      element: withSuspense(<Category />),
     },
     {///
       path: "/Category/:name",
-      element: <Category />,
+      element: withSuspense(<Category />),
     },
     {///
       path: "/Checkout",
-      element: <Checkout />,
+      element: withSuspense(<Checkout />),
     },
     {///
       path: "/ProductDetails/:id",
-      element: <ProductDetails />, //
+      element: withSuspense(<ProductDetails />), //
     },
     {///
       path: "/ProductDetailWithComments",
-      element: <ProductDetailWithComments />,
+      element: withSuspense(<ProductDetailWithComments />),
     },
     {
       path: "/Wishlist",
-      element: <Wishlist />,
+      element: withSuspense(<Wishlist />),
     },
     {
       path: "/Blog",
-      element: <BlogList />,
+      element: withSuspense(<BlogList />),
     },
     {
       path: "/Blog/:id",
-      element: <BlogDetail />,
+      element: withSuspense(<BlogDetail />),
     },
   ]);
   return (

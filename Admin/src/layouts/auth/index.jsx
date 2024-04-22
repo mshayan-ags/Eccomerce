@@ -1,8 +1,17 @@
+import { Suspense } from "react";
 import Footer from "components/footer/FooterAuthDefault";
 import authImg from "assets/img/auth/auth.png";
 import { Link, Routes, Route, Navigate } from "react-router-dom";
 import routes from "routes.js";
 import FixedPlugin from "components/fixedPlugin/FixedPlugin";
+
+function RouteLoader() {
+  return (
+    <div className="flex h-[60vh] w-full items-center justify-center">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
+    </div>
+  );
+}
 
 export default function Auth() {
   const getRoutes = (routes) => {
@@ -44,13 +53,15 @@ export default function Auth() {
                     </p>
                   </div>
                 </Link>
-                <Routes>
-                  {getRoutes(routes)}
-                  <Route
-                    path="/"
-                    element={<Navigate to="/auth/sign-in" replace />}
-                  />
-                </Routes>
+                <Suspense fallback={<RouteLoader />}>
+                  <Routes>
+                    {getRoutes(routes)}
+                    <Route
+                      path="/"
+                      element={<Navigate to="/auth/sign-in" replace />}
+                    />
+                  </Routes>
+                </Suspense>
                 <div className="absolute right-0 hidden h-full min-h-screen md:block lg:w-[49vw] 2xl:w-[44vw]">
                   <div
                     className="absolute flex h-full w-full items-end justify-center bg-cover bg-center lg:rounded-bl-[120px] xl:rounded-bl-[200px]"

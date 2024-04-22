@@ -1,9 +1,20 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes.js";
+
+// Each view in routes.js is a separate lazy chunk - this is the one place
+// that suspends while a chunk is still being fetched, so every route
+// transition doesn't need its own Suspense boundary.
+function RouteLoader() {
+  return (
+    <div className="flex h-[60vh] w-full items-center justify-center">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent dark:border-white dark:border-t-transparent" />
+    </div>
+  );
+}
 
 export default function Admin(props) {
   const { ...rest } = props;
@@ -76,14 +87,16 @@ export default function Admin(props) {
               {...rest}
             />
             <div className="pt-5 mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
-              <Routes>
-                {getRoutes(routes)}
+              <Suspense fallback={<RouteLoader />}>
+                <Routes>
+                  {getRoutes(routes)}
 
-                <Route
-                  path="/"
-                  element={<Navigate to="/admin/default" replace />}
-                />
-              </Routes>
+                  <Route
+                    path="/"
+                    element={<Navigate to="/admin/default" replace />}
+                  />
+                </Routes>
+              </Suspense>
             </div>
             <div className="p-3">
               <Footer />

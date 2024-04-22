@@ -1,7 +1,7 @@
-import React from "react";
+import React, { lazy } from "react";
 
 // Admin Imports
-import MainDashboard from "views/admin/default";
+const MainDashboard = lazy(() => import("views/admin/default"));
 
 // Icon Imports
 import {
@@ -12,30 +12,33 @@ import {
   MdLock,
 } from "react-icons/md";
 
-import Address from "views/admin/Address/List";
-import Bank from "views/admin/Bank/List";
-import User from "views/admin/User/List";
-import Sale from "views/admin/Sale/List";
-import EditSale from "views/admin/Sale/OrderTracking";
-import Brand from "views/admin/Brand/List";
-import AddBrand from "views/admin/Brand/index";
-import Category from "views/admin/Category/List";
-import AddCategory from "views/admin/Category";
+// Each view is its own chunk, only fetched when an admin actually navigates
+// there - the sidebar/router shell (loaded up front) stays a small, fast
+// initial bundle instead of everything shipping together.
+const Address = lazy(() => import("views/admin/Address/List"));
+const Bank = lazy(() => import("views/admin/Bank/List"));
+const User = lazy(() => import("views/admin/User/List"));
+const Sale = lazy(() => import("views/admin/Sale/List"));
+const EditSale = lazy(() => import("views/admin/Sale/OrderTracking"));
+const Brand = lazy(() => import("views/admin/Brand/List"));
+const AddBrand = lazy(() => import("views/admin/Brand/index"));
+const Category = lazy(() => import("views/admin/Category/List"));
+const AddCategory = lazy(() => import("views/admin/Category"));
 
-import Discount from "views/admin/Discount/List";
-import AddDiscount from "views/admin/Discount/index";
+const Discount = lazy(() => import("views/admin/Discount/List"));
+const AddDiscount = lazy(() => import("views/admin/Discount/index"));
 
-import Coupon from "views/admin/Coupon/List";
-import AddCoupon from "views/admin/Coupon";
+const Coupon = lazy(() => import("views/admin/Coupon/List"));
+const AddCoupon = lazy(() => import("views/admin/Coupon"));
 
-import Product from "views/admin/Product/List";
-import AddProduct from "views/admin/Product";
-import SignIn from "views/auth/SignIn";
-import Select from "views/admin/Product/Select";
+const Product = lazy(() => import("views/admin/Product/List"));
+const AddProduct = lazy(() => import("views/admin/Product"));
+const SignIn = lazy(() => import("views/auth/SignIn"));
+const Select = lazy(() => import("views/admin/Product/Select"));
 
-import Blog from "views/admin/Blog/List";
-import AddBlog from "views/admin/Blog";
-import Review from "views/admin/Review/List";
+const Blog = lazy(() => import("views/admin/Blog/List"));
+const AddBlog = lazy(() => import("views/admin/Blog"));
+const Review = lazy(() => import("views/admin/Review/List"));
 
 const routes = [
   {

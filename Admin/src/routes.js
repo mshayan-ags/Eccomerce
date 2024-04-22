@@ -37,6 +37,7 @@ const Select = lazy(() => import("views/admin/Product/Select"));
 const Blog = lazy(() => import("views/admin/Blog/List"));
 const AddBlog = lazy(() => import("views/admin/Blog"));
 const Review = lazy(() => import("views/admin/Review/List"));
+const Settings = lazy(() => import("views/admin/Settings"));
 
 const routes = [
   {
@@ -193,6 +194,14 @@ const routes = [
     path: "Review",
     icon: <MdPerson className="h-6 w-6" />,
     component: <Review />,
+  },
+  {
+    name: "Settings",
+    layout: "/admin",
+    isHidden: true,
+    path: "Settings",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <Settings />,
   },
 ];
 export default routes;

@@ -11,9 +11,42 @@ function SignIn({ setToken }) {
     email: "",
     password: ""
   })
+  const [pendingToken, setPendingToken] = useState(null)
+  const [twoFactorCode, setTwoFactorCode] = useState("")
 
   function handleChange(name, value) {
     setState({ ...state, [name]: value })
+  }
+
+  function finishLogin(res) {
+    if (res?.data?.status == 200) {
+      localStorage.setItem("token", res?.data?.token);
+      setToken(res?.data?.token);
+      navigate("/admin/default");
+    }
+    swal({
+      text: res?.data?.message,
+      button: {
+        text: "Ok",
+        closeModal: true,
+      },
+      icon: res?.data?.status == 200 ? "success" : "error",
+      time: 3000,
+    });
+  }
+
+  function showError(err) {
+    swal({
+      text: err?.response?.data?.message
+        ? err?.response?.data?.message
+        : "There was some Error",
+      button: {
+        text: "Ok",
+        closeModal: true,
+      },
+      icon: "error",
+      time: 3000,
+    });
   }
 
   const handleSubmit = () => {
@@ -21,36 +54,62 @@ function SignIn({ setToken }) {
       axios
         .post(`${process.env.REACT_APP_PUBLIC_PATH}/Login-Admin`, state)
         .then((res) => {
-          if (res?.data?.status == 200) {
-            localStorage.setItem("token", res?.data?.token);
-            setToken(res?.data?.token);
-            navigate("/admin/default");
+          if (res?.data?.twoFactorRequired) {
+            setPendingToken(res?.data?.pendingToken);
+          } else {
+            finishLogin(res);
           }
-          swal({
-            text: res?.data?.message,
-            button: {
-              text: "Ok",
-              closeModal: true,
-            },
-            icon: res?.data?.status == 200 ? "success" : "error",
-            time: 3000,
-          });
         })
-        .catch((err) => {
-          swal({
-            text: err?.response?.data?.message
-              ? err?.response?.data?.message
-              : "There was some Error",
-            button: {
-              text: "Ok",
-              closeModal: true,
-            },
-            icon: "error",
-            time: 3000,
-          });
-        });
+        .catch(showError);
     }
   };
+
+  const handleVerify2FA = () => {
+    if (!twoFactorCode) return;
+    axios
+      .post(`${process.env.REACT_APP_PUBLIC_PATH}/Login-Admin-2FA`, {
+        pendingToken,
+        token: twoFactorCode,
+      })
+      .then(finishLogin)
+      .catch(showError);
+  };
+
+  if (pendingToken) {
+    return (
+      <div className="mt-16 mb-16 flex h-full w-full items-center justify-center px-2 md:mx-0 md:px-0 lg:mb-10 lg:items-center lg:justify-start">
+        <div className="mt-[10vh] w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 xl:max-w-[420px]">
+          <h4 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
+            Two-Factor Verification
+          </h4>
+          <p className="mb-9 ml-1 text-base text-gray-600">
+            Enter the 6-digit code from your authenticator app
+          </p>
+          <InputField
+            variant="auth"
+            extra="mb-3"
+            label="Authentication Code*"
+            placeholder="123456"
+            id="twoFactorCode"
+            type="text"
+            name="twoFactorCode"
+            value={twoFactorCode}
+            onChange={(e) => setTwoFactorCode(e.target.value)}
+          />
+          <button onClick={handleVerify2FA} className="linear mt-2 w-full rounded-xl bg-brand-500 py-[12px] text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
+            Verify
+          </button>
+          <p
+            className="mt-4 cursor-pointer text-center text-sm text-gray-600 hover:underline"
+            onClick={() => setPendingToken(null)}
+          >
+            Back to Sign In
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-16 mb-16 flex h-full w-full items-center justify-center px-2 md:mx-0 md:px-0 lg:mb-10 lg:items-center lg:justify-start">
       {/* Sign in section */}

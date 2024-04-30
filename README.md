@@ -1,10 +1,9 @@
-# Eccomerce (Metropolitan / Pet E-Commerce) 
-**Repository:** [https://github.com/mshayan-ags/Eccomerce](https://github.com/mshayan-ags/Eccomerce)  
+# Eccomerce 
 ---
 
 ## 1. Project Overview
 
-**Eccomerce** is a full-stack **pet-focused e-commerce platform** (package names and product attributes strongly indicate pet supplies: LifeStage, flavor, size for dogs/cats, nutritional info, ingredients, etc.). Internally the backend is named **“metropolitan”**; the customer frontend is **“pet-ecommerce”** and the admin app is **“pet-eccomerece”**.
+**Eccomerce** is a full-stack **pet-focused e-commerce platform** (package names and product attributes strongly indicate pet supplies: LifeStage, flavor, size for dogs/cats, nutritional info, ingredients, etc.). Internally the backend is named **“x”**; the customer frontend is **“pet-ecommerce”** and the admin app is **“pet-eccomerece”**.
 
 It consists of **three separate applications**:
 
@@ -235,7 +234,7 @@ npm test    # jest --runInBand
 ### 4.12 Backend Environment (`.env.example`)
 
 ```env
-MONGODB_URI=mongodb://127.0.0.1:27017/metropolitan
+MONGODB_URI=mongodb://127.0.0.1:27017/x
 JWT_SECRET=replace-with-a-long-random-secret
 STRIPE_SECRET_KEY=sk_test_replace_me
 STRIPE_WEBHOOK_SECRET=whsec_replace_me
@@ -245,7 +244,7 @@ SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
 SMTP_PASS=
-SMTP_FROM="Metropolitan <no-reply@example.com>"
+SMTP_FROM="x <no-reply@example.com>"
 ```
 
 ---
@@ -507,7 +506,7 @@ npm run pretty   # Prettier
 ## 11. Naming & Consistency Notes
 
 - Repo name: **Eccomerce** (double “c”, missing “m”).
-- Package names: backend `metropolitan`, frontend `pet-ecommerce`, admin `pet-eccomerece`.
+- Package names: backend `x`, frontend `pet-ecommerce`, admin `pet-eccomerece`.
 - Model/folder spellings: `Whishlist`, `ReedemCoupon`, Frontend `assests`, page `Singin.js`.
 - These are preserved as in the source; documentation does not rename them.
 

@@ -11,7 +11,12 @@ export const withAuthContext = (Component) => (props) =>
   );
 
 const AuthProvider = ({ children }) => {
-  const [Token, setToken] = useState("");
+  // Read synchronously so the very first render already has the real auth
+  // state - App.jsx calls useRoutes() on that first render too, and if Token
+  // started empty here, ProtectedRoute would see isLoggedIn=false for one
+  // tick and Navigate to sign-in, which then bounces back to /admin/default
+  // once the token loads - losing whatever deep admin URL was requested.
+  const [Token, setToken] = useState(() => localStorage.getItem("token") || "");
   const [currAdmin, setcurrAdmin] = useState({});
   const [AdminRole, setAdminRole] = useState("");
   const GetCurrentAdmin = () => {
@@ -52,10 +57,6 @@ const AuthProvider = ({ children }) => {
       setToken("");
     }
   }
-
-  useEffect(() => {
-    if (localStorage.getItem("token")) setToken(localStorage.getItem("token"));
-  }, []);
 
   useEffect(() => {
     CheckToken();

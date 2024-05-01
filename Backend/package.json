@@ -35,8 +35,5 @@
     "supertest": "^7.0.0"
   },
   "author": "",
-  "license": "ISC",
-  "allowScripts": {
-    "mongodb-memory-server@11.2.0": true
-  }
+  "license": "ISC"
 }

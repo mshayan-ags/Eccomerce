@@ -196,7 +196,7 @@ router.post("/Admin-2FA/Setup", async (req, res) => {
 		const secret = authenticator.generateSecret();
 		await Admin.updateOne({ _id: id }, { twoFactorSecret: secret, twoFactorEnabled: false });
 
-		const otpauth = authenticator.keyuri(searchAdmin.email, "Metropolitan Admin", secret);
+		const otpauth = authenticator.keyuri(searchAdmin.email, "Eccomerce Admin", secret);
 		const qrCode = await QRCode.toDataURL(otpauth);
 
 		res.status(200).json({ status: 200, secret, qrCode });

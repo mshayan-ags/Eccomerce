@@ -1,9 +1,39 @@
 # Eccomerce 
 ---
 
+## Screenshots
+
+### Customer Frontend
+
+| Home | Category / Filters |
+|------|---------------------|
+| ![Storefront home page with product listings](docs/screenshots/storefront-home.png) | ![Category page with brand/size/flavor filters](docs/screenshots/storefront-category.png) |
+
+| Cart | Order History |
+|------|----------------|
+| ![Cart page with items and totals](docs/screenshots/storefront-cart.png) | ![Order history table](docs/screenshots/storefront-order-history.png) |
+
+### Admin Panel
+
+| Sign In | Dashboard |
+|---------|-----------|
+| ![Admin sign-in page](docs/screenshots/admin-sign-in.png) | ![Admin dashboard with revenue/order charts](docs/screenshots/admin-dashboard.png) |
+
+| Orders | Products |
+|--------|----------|
+| ![Admin order list](docs/screenshots/admin-orders.png) | ![Admin product grid](docs/screenshots/admin-products.png) |
+
+| Review Moderation | Two-Factor Authentication Setup |
+|--------------------|----------------------------------|
+| ![Admin review moderation table with hide/delete actions](docs/screenshots/admin-reviews.png) | ![Admin 2FA setup screen with QR code](docs/screenshots/admin-2fa-settings.png) |
+
+*Captured from a local run seeded with sample data — a live database will look different.*
+
+---
+
 ## 1. Project Overview
 
-**Eccomerce** is a full-stack **pet-focused e-commerce platform** (package names and product attributes strongly indicate pet supplies: LifeStage, flavor, size for dogs/cats, nutritional info, ingredients, etc.). Internally the backend is named **“x”**; the customer frontend is **“pet-ecommerce”** and the admin app is **“pet-eccomerece”**.
+**Eccomerce** is a full-stack **pet-focused e-commerce platform** (package names and product attributes strongly indicate pet supplies: LifeStage, flavor, size for dogs/cats, nutritional info, ingredients, etc.). Internally the backend is named **“ecommerce-backend”**; the customer frontend is **“pet-ecommerce”** and the admin app is **“pet-eccomerece”**.
 
 It consists of **three separate applications**:
 
@@ -234,7 +264,7 @@ npm test    # jest --runInBand
 ### 4.12 Backend Environment (`.env.example`)
 
 ```env
-MONGODB_URI=mongodb://127.0.0.1:27017/x
+MONGODB_URI=mongodb://127.0.0.1:27017/Eccomerce
 JWT_SECRET=replace-with-a-long-random-secret
 STRIPE_SECRET_KEY=sk_test_replace_me
 STRIPE_WEBHOOK_SECRET=whsec_replace_me
@@ -244,7 +274,7 @@ SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
 SMTP_PASS=
-SMTP_FROM="x <no-reply@example.com>"
+SMTP_FROM="Eccomerce <no-reply@example.com>"
 ```
 
 ---
@@ -421,6 +451,7 @@ npm run pretty   # Prettier
 - Points / loyalty field on User
 - Coupon application at checkout
 - Password reset via OTP (email or console fallback)
+- Guest checkout (a lightweight guest account is created transparently, no signup required)
 
 ### Admin
 
@@ -430,6 +461,7 @@ npm run pretty   # Prettier
 - Manage Sales / orders (status, tracking details)
 - Review management
 - Real-time new-order notifications via Socket.IO admin room
+- Two-factor authentication (TOTP via an authenticator app) for admin accounts
 
 ### Cross-cutting
 
@@ -437,8 +469,9 @@ npm run pretty   # Prettier
 - Image upload/storage and serving
 - Rate-limited auth endpoints
 - Helmet + CORS + mongo-sanitize
-- Stripe webhook for payment confirmation
+- Stripe webhook for payment confirmation (backstop for orders the browser never finalizes)
 - Optional SMTP for OTPs
+- Route-level code splitting (`React.lazy` + `Suspense`) in both React apps
 
 ---
 
@@ -506,7 +539,7 @@ npm run pretty   # Prettier
 ## 11. Naming & Consistency Notes
 
 - Repo name: **Eccomerce** (double “c”, missing “m”).
-- Package names: backend `x`, frontend `pet-ecommerce`, admin `pet-eccomerece`.
+- Package names: backend `ecommerce-backend`, frontend `pet-ecommerce`, admin `pet-eccomerece`.
 - Model/folder spellings: `Whishlist`, `ReedemCoupon`, Frontend `assests`, page `Singin.js`.
 - These are preserved as in the source; documentation does not rename them.
 
@@ -547,3 +580,28 @@ npm run pretty   # Prettier
 - **Backend** — Express + MongoDB API with JWT auth, Stripe, Socket.IO order/admin rooms, rate limiting, and image serving.
 - **Frontend** — Customer store with catalog, cart, checkout, Stripe pay, wishlist, reviews, blog, order tracking, and account management.
 - **Admin** — Full management UI for catalog, orders, users, coupons, discounts, blogs, and reviews, with dashboard charts and real-time order alerts.
+
+---
+
+## References
+
+Documentation for the main technologies and services this project is built on:
+
+| Technology | Used for | Docs |
+|------------|----------|------|
+| Express | Backend HTTP server & routing | https://expressjs.com/ |
+| Mongoose / MongoDB | Data models & persistence | https://mongoosejs.com/docs/ |
+| Socket.IO | Real-time order tracking & admin alerts | https://socket.io/docs/v4/ |
+| Stripe | Payments, PaymentIntents, webhooks | https://stripe.com/docs/payments/payment-intents and https://stripe.com/docs/webhooks |
+| JSON Web Tokens | Auth (`jsonwebtoken`) | https://github.com/auth0/node-jsonwebtoken |
+| otplib | TOTP codes for admin 2FA | https://github.com/yeojz/otplib |
+| React | Frontend & Admin UI | https://react.dev/ |
+| React Router v6 | Client-side routing, code splitting (`React.lazy`) | https://reactrouter.com/en/main |
+| Create React App | Build tooling for both React apps | https://create-react-app.dev/ |
+| Tailwind CSS | Styling | https://tailwindcss.com/docs |
+| Horizon UI | Admin Panel's base template | https://horizon-ui.com/ |
+| Helmet | Security headers | https://helmetjs.github.io/ |
+| express-rate-limit | Rate limiting on auth routes | https://github.com/express-rate-limit/express-rate-limit |
+| express-mongo-sanitize | NoSQL injection protection | https://github.com/fiznool/express-mongo-sanitize |
+| Nodemailer | SMTP email (password-reset OTPs) | https://nodemailer.com/ |
+| Jest / Supertest | Backend testing | https://jestjs.io/docs/getting-started and https://github.com/ladjs/supertest |
